@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Farm } from "modules/farms/entities/farm.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -10,6 +11,9 @@ export class User {
 
   @Column()
   public hashedPassword: string;
+
+  @OneToMany(() => Farm, (farm) => farm.user)
+  public farms: Array<Farm>;
 
   @CreateDateColumn()
   public createdAt: Date;
