@@ -10,6 +10,7 @@ export class FarmsService {
 
   constructor() {
     this.farmsRepository = dataSource.getRepository(Farm);
+    this.geographyService = new GeographyService();
   }
 
   public async create(farm: CreateFarmDto) {
