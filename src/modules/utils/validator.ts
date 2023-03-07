@@ -1,5 +1,6 @@
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
+import { UnprocessableEntityError } from "errors/errors";
 
 export class Validator {
   public async convertAndValidate<T extends object>(classToConvert: ClassConstructor<T>, body: string | object): Promise<T> {
@@ -14,7 +15,7 @@ export class Validator {
     const validationErrors: Array<string> = this.handleErrors(await validate(data, { skipMissingProperties: false }));
 
     if (validationErrors.length) {
-      throw new Error(validationErrors.join(", "));
+      throw new UnprocessableEntityError(validationErrors.join(", "));
     }
   }
 

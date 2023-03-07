@@ -10,6 +10,7 @@ export class FarmsController {
 
   constructor() {
     this.farmsService = new FarmsService();
+    this.validator = new Validator();
   }
 
   public async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
