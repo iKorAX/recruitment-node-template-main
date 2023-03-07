@@ -1,5 +1,7 @@
+import { Coordinate } from "modules/geography/dto/geocode-response.dto";
 import { User } from "modules/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { PointTransformer } from "../point-transformer";
 
 @Entity()
 export class Farm {
@@ -12,8 +14,8 @@ export class Farm {
   @Column()
   public address: string;
 
-  @Column({ type: "point" })
-  public coordinates: string;
+  @Column({ type: "point", transformer: new PointTransformer() })
+  public coordinates: Coordinate;
 
   @Column({ type: "double precision" })
   public size: number;
