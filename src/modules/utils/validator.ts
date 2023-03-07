@@ -1,6 +1,3 @@
-
-
-
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
 
@@ -9,7 +6,7 @@ export class Validator {
     const data = plainToInstance(classToConvert, body);
 
     await this.validate(data);
-    
+
     return data;
   }
 
@@ -39,4 +36,3 @@ export class Validator {
     return validationErrors;
   }
 }
-

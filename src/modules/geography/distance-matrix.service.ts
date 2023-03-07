@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import config from "config/config";
 import { externalApiCall } from "helpers/external-api-call";
 import { Validator } from "modules/utils/validator";
+import { DistanceResponseDto } from "./dto/distance-response.dto";
 import { GeocodeResponseDto } from "./dto/geocode-response.dto";
 
 export class DistanceMatrixService {
@@ -20,12 +21,12 @@ export class DistanceMatrixService {
     return result;
   }
 
-  public async getDrivingDistance(origins: string, destinations: string) {
+  public async getDrivingDistance(origins: string, destinations: string): Promise<DistanceResponseDto> {
     const response = await this.sendRequest(this.distanceEndpoint, { origins, destinations });
 
     const validator = new Validator();
 
-    const result = await validator.convertAndValidate(GeocodeResponseDto, response.data as object);
+    const result = await validator.convertAndValidate(DistanceResponseDto, response.data as object);
 
     return result;
   }
