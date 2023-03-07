@@ -51,32 +51,3 @@ export class DistanceResponseDto {
   @Type(() => DistanceRow)
   public rows: Array<DistanceRow>;
 }
-
-// {
-//   "destination_addresses": [
-//       "Verkių g., Vilnius, Lithuania"
-//   ],
-//   "origin_addresses": [
-//       "Ukmergės g. 244, 07162 Vilnius, Lithuania"
-//   ],
-//   "rows": [
-//       {
-//           "elements": [
-//               {
-//                   "distance": {
-//                       "text": "4.7 km",
-//                       "value": 4708
-//                   },
-//                   "duration": {
-//                       "text": "10 mins",
-//                       "value": 603
-//                   },
-//                   "origin": "54.721771999999994,25.242017999999998",
-//                   "destination": "54.7156288,25.2931425",
-//                   "status": "OK"
-//               }
-//           ]
-//       }
-//   ],
-//   "status": "OK"
-// }
