@@ -1,36 +1,11 @@
-import { Expose } from "class-transformer";
-
-export class GeocodeResponseDto {
-  public result: Array<GeocodeResponseData>;
-  public status: string;
-}
-
-export class GeocodeResponseData {
-  @Expose({ name: "address_components" })
-  public addressComponents: Array<object>;
-
-  @Expose({ name: "formatted_address" })
-  public formattedAddress: string;
-
-  public geometry: Geometry;
-
-  @Expose({ name: "place_id" })
-  public placeId: string;
-
-  @Expose({ name: "plus_code" })
-  public plusCode: {};
-
-  public types: ["locality", "political"];
-}
-
-class Geometry {
-  public location: Coordinate;
-  public location_type: string;
-  public viewport: Viewport;
-}
+import { Expose, Type } from "class-transformer";
+import { IsArray, IsNumber, IsObject, IsString, ValidateNested } from "class-validator";
 
 export class Coordinate {
+  @IsNumber()
   public lat: number;
+
+  @IsNumber()
   public lng: number;
 }
 
@@ -39,64 +14,51 @@ class Viewport {
   public southwest: Coordinate;
 }
 
-// {
-//     "result": [
-//         {
-//             "address_components": [
-//                 {
-//                     "long_name": "ukmergės g.",
-//                     "short_name": "ukmergės g.",
-//                     "types": [
-//                         "route"
-//                     ]
-//                 },
-//                 {
-//                     "long_name": "244",
-//                     "short_name": "244",
-//                     "types": [
-//                         "street_number"
-//                     ]
-//                 },
-//                 {
-//                     "long_name": "07162",
-//                     "short_name": "07162",
-//                     "types": [
-//                         "postcode"
-//                     ]
-//                 },
-//                 {
-//                     "long_name": "vilnius",
-//                     "short_name": "vilnius",
-//                     "types": [
-//                         "locality"
-//                     ]
-//                 }
-//             ],
-//             "formatted_address": "Ukmergės g. 244, 07162 Vilnius",
-//             "geometry": {
-//                 "location": {
-//                     "lat": 54.721771999999994,
-//                     "lng": 25.242017999999998
-//                 },
-//                 "location_type": "APPROXIMATE",
-//                 "viewport": {
-//                     "northeast": {
-//                         "lat": 54.721771999999994,
-//                         "lng": 25.242017999999998
-//                     },
-//                     "southwest": {
-//                         "lat": 54.721771999999994,
-//                         "lng": 25.242017999999998
-//                     }
-//                 }
-//             },
-//             "place_id": "",
-//             "plus_code": {},
-//             "types": [
-//                 "locality",
-//                 "political"
-//             ]
-//         }
-//     ],
-//     "status": "OK"
-// }
+export class Geometry {
+  @ValidateNested()
+  @Type(() => Coordinate)
+  public location: Coordinate;
+
+  @IsString()
+  @Expose({ name: "location_type" })
+  public locationType: string;
+
+  @IsObject()
+  public viewport: Viewport;
+}
+
+export class GeocodeResponseData {
+  @Expose({ name: "address_components" })
+  @Type(() => Object)
+  @IsArray()
+  public addressComponents: object[];
+
+  @Expose({ name: "formatted_address" })
+  @IsString()
+  public formattedAddress: string;
+
+  @ValidateNested()
+  @Type(() => Geometry)
+  public geometry: Geometry;
+
+  @Expose({ name: "place_id" })
+  @IsString()
+  public placeId: string;
+
+  @IsObject()
+  @Expose({ name: "plus_code" })
+  public plusCode: {};
+
+  @IsArray()
+  public types: ["locality", "political"];
+}
+
+export class GeocodeResponseDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GeocodeResponseData)
+  public result: Array<GeocodeResponseData>;
+
+  @IsString()
+  public status: string;
+}

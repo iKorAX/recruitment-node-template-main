@@ -31,7 +31,7 @@ const geocodeResponseDtoMock: GeocodeResponseDto = {
           lat: 51.442498500000006,
           lng: -2.5796065,
         },
-        location_type: "APPROXIMATE",
+        locationType: "APPROXIMATE",
         viewport: {
           northeast: {
             lat: 51.442498500000006,
