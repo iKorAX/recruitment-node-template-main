@@ -1,7 +1,7 @@
 import config from "config/config";
 import { NextFunction, Response } from "express";
 import * as jwt from "jsonwebtoken";
-import { AuthenticatedRequest } from "./authenticated-request";
+import { AuthenticatedRequest } from "../common/authenticated-request";
 
 export function authenticateTokenMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
