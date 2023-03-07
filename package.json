@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/main.ts",
+    "debug": "node --inspect -r ts-node/register src/main.ts",
     "lint": "eslint \"{src, test}/**/*.ts\" --fix",
     "test": "NODE_ENV=test jest --runInBand --verbose --coverage",
     "typeorm": "typeorm-ts-node-commonjs -d src/orm/orm.config.ts",
