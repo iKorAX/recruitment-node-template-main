@@ -1,4 +1,3 @@
-import { Coordinate } from "modules/geography/dto/geocode-response.dto";
 import { GeographyService } from "modules/geography/geography.service";
 import { UsersService } from "modules/users/users.service";
 import { Repository } from "typeorm";
