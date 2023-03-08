@@ -31,6 +31,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ ...param });
   }
 
+  public async find(): Promise<User[]> {
+    return this.usersRepository.find();
+  }
+
   private async hashPassword(password: string, salt_rounds = config.SALT_ROUNDS): Promise<string> {
     const salt = await bcrypt.genSalt(salt_rounds);
     return bcrypt.hash(password, salt);
