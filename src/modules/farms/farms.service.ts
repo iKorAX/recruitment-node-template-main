@@ -31,7 +31,11 @@ export class FarmsService {
     await this.farmsRepository.delete({ id });
   }
 
-  public async getAll() {
-    await this.farmsRepository.find();
+  public async getOneById(id: string): Promise<Farm | null> {
+    return this.farmsRepository.findOneBy({ id });
+  }
+
+  public async getAll(): Promise<Farm[]> {
+    return this.farmsRepository.find();
   }
 }
