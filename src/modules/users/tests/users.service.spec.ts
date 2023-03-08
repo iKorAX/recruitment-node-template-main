@@ -8,6 +8,7 @@ import ds from "orm/orm.config";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { User } from "../entities/user.entity";
 import { UsersService } from "../users.service";
+import { GeographyService } from "modules/geography/geography.service";
 
 describe("UsersController", () => {
   let app: Express;
@@ -27,6 +28,7 @@ describe("UsersController", () => {
   beforeEach(async () => {
     await ds.initialize();
     usersService = new UsersService();
+    jest.spyOn(GeographyService.prototype, "getCoordinates").mockResolvedValue({ lat: 1, lng: 1 });
   });
 
   afterEach(async () => {
@@ -34,7 +36,7 @@ describe("UsersController", () => {
   });
 
   describe(".createUser", () => {
-    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password" };
+    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password", address: "Vilniaus g. 18, Vilnius" };
 
     it("should create new user", async () => {
       const createdUser = await usersService.createUser(createUserDto);
@@ -56,7 +58,7 @@ describe("UsersController", () => {
   });
 
   describe(".findOneBy", () => {
-    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password" };
+    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password", address: "Vilniaus g. 18, Vilnius" };
 
     it("should get user by provided param", async () => {
       const user = await usersService.createUser(createUserDto);
