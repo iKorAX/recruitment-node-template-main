@@ -19,9 +19,12 @@ export class GeographyService {
     return coordinate;
   }
 
-  public async getDrivingDistance(origin: Coordinate, destination: Coordinate) {
-    await this.distanceMatrixService.getDrivingDistance(JSON.stringify(origin), JSON.stringify(destination));
+  public async getDrivingDistance(origin: Coordinate, destination: Coordinate): Promise<number> {
+    const response = await this.distanceMatrixService.getDrivingDistance(
+      `${origin.lat},${origin.lng}`,
+      `${destination.lat},${destination.lng}`,
+    );
 
-    return 0;
+    return response?.rows[0]?.elements[0]?.distance?.value || -1;
   }
 }

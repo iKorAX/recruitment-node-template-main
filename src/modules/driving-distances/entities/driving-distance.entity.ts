@@ -7,10 +7,10 @@ export class DrivingDistance {
   @PrimaryGeneratedColumn("uuid")
   public readonly id: string;
 
-  @ManyToOne(() => User, (user): Array<DrivingDistance> => user.drivingDistances)
+  @ManyToOne(() => User, (user): Array<DrivingDistance> => user.drivingDistances, { nullable: false })
   public user: User;
 
-  @ManyToOne(() => Farm, farm => farm.drivingDistances)
+  @ManyToOne(() => Farm, farm => farm.drivingDistances, { nullable: false })
   public farm: Farm;
 
   @Column({ type: "double precision", name: "driving_distance" })

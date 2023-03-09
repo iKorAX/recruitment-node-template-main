@@ -6,6 +6,7 @@ const options: DataSourceOptions = {
   entities: ["src/**/**/entities/**/*.ts"],
   synchronize: false,
   migrations: ["src/**/**/migrations/**/*.ts"],
+  subscribers: ["src/**/**/entities/**/*.subscriber.ts"],
   host: config.DB_HOST,
   port: config.DB_PORT,
   username: config.DB_USERNAME,

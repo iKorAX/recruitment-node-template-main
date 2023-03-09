@@ -3,13 +3,17 @@ import { AuthenticatedRequest } from "common/authenticated-request";
 import { FarmsService } from "./farms.service";
 import { Validator } from "modules/utils/validator";
 import { CreateFarmDto } from "./dto/create-farm.dto";
+import { GetFarmsDto } from "./dto/get-farms.dto";
+import { DrivingDistanceService } from "modules/driving-distances/driving-distance.service";
 
 export class FarmsController {
   private readonly farmsService: FarmsService;
+  private readonly drivingDistanceService: DrivingDistanceService;
   private readonly validator: Validator;
 
   constructor() {
     this.farmsService = new FarmsService();
+    this.drivingDistanceService = new DrivingDistanceService();
     this.validator = new Validator();
   }
 
@@ -17,7 +21,7 @@ export class FarmsController {
     try {
       const validatedBody = await this.validator.convertAndValidate(CreateFarmDto, req.body as object);
 
-      await this.farmsService.create(validatedBody);
+      await this.farmsService.create(validatedBody, req.user.id);
 
       res.send(200);
     } catch (error) {
@@ -25,12 +29,17 @@ export class FarmsController {
     }
   }
 
-  // public async get(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  //   try {
-  //     //   const user = await this.usersService.createUser(req.body as CreateUserDto);
-  //     //   res.status(201).send(UserDto.createFromEntity(user));
-  //   } catch (error) {
-  //     //   next(error);
-  //   }
-  // }
+  public async get(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const validatedBody = await this.validator.convertAndValidate(GetFarmsDto, req.query as object);
+
+      const query = await this.farmsService.getFarmsListQuery(req.user.id, validatedBody);
+      const rawList = await this.drivingDistanceService.getAll(query);
+      const result = this.farmsService.toFarmList(rawList);
+
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { UsersService } from "modules/users/users.service";
+import { AuthService } from "modules/auth/auth.service";
 import { Validator } from "modules/utils/validator";
 import { AuthenticatedRequest } from "../common/authenticated-request";
 import { UserAuthorizationDataDto } from "./dto/user-authorization-data.dto";
@@ -7,13 +7,12 @@ import { UserAuthorizationDataDto } from "./dto/user-authorization-data.dto";
 export async function authorizeUserMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
     const validator = new Validator();
-    const usersService = new UsersService();
+    const authService = new AuthService();
 
     const validatedUserData = await validator.convertAndValidate(UserAuthorizationDataDto, req.user);
+    const token = await authService.getActiveUserToken(req.token, validatedUserData.id);
 
-    const user = await usersService.findOneBy({ id: validatedUserData.id, email: validatedUserData.email });
-
-    if (user == null) return res.sendStatus(401);
+    if (!token) return res.sendStatus(401);
 
     next();
   } catch (err) {

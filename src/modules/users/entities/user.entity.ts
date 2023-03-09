@@ -21,10 +21,10 @@ export class User {
   @Column({ type: "point", transformer: new PointTransformer() })
   public coordinates: Coordinate;
 
-  @OneToMany(() => Farm, farm => farm.user)
+  @OneToMany(() => Farm, farm => farm.user, { cascade: true })
   public farms: Array<Farm>;
 
-  @OneToMany(() => DrivingDistance, drivingDistance => drivingDistance.user)
+  @OneToMany(() => DrivingDistance, drivingDistance => drivingDistance.user, { cascade: true })
   public drivingDistances: Array<DrivingDistance>;
 
   @CreateDateColumn()

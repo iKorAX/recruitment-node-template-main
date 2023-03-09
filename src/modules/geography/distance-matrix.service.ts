@@ -32,8 +32,15 @@ export class DistanceMatrixService {
   }
 
   private async sendRequest(endpoint: string, params: object): Promise<AxiosResponse> {
-    const response = await externalApiCall.get(`${this.baseUrl}/${endpoint}`, { params: { ...params, key: this.apiKey } });
-
-    return response;
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const response = await externalApiCall.get(`${this.baseUrl}/${endpoint}`, { params: { ...params, key: this.apiKey } });
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        }
+      }, 1000);
+    });
   }
 }

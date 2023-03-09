@@ -28,6 +28,7 @@ export class UsersService {
     const userData: DeepPartial<User> = { email, address, coordinates, hashedPassword };
 
     const newUser = this.usersRepository.create(userData);
+
     return this.usersRepository.save(newUser);
   }
 

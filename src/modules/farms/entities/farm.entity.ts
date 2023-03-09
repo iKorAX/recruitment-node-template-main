@@ -24,7 +24,7 @@ export class Farm {
   @Column({ type: "double precision" })
   public yield: number;
 
-  @ManyToOne(() => User, (user): Array<Farm> => user.farms)
+  @ManyToOne(() => User, (user): Array<Farm> => user.farms, { nullable: false })
   public user: User;
 
   @OneToMany(() => DrivingDistance, drivingDistance => drivingDistance.farm)

@@ -3,4 +3,5 @@ import { UserAuthorizationDataDto } from "middlewares/dto/user-authorization-dat
 
 export interface AuthenticatedRequest extends Request {
   user: UserAuthorizationDataDto;
+  token: string;
 }

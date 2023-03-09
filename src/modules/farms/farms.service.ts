@@ -1,30 +1,38 @@
-import { Repository } from "typeorm";
+import { FindManyOptions, Repository } from "typeorm";
 import { CreateFarmDto } from "./dto/create-farm.dto";
 import { Farm } from "./entities/farm.entity";
 import dataSource from "orm/orm.config";
 import { GeographyService } from "modules/geography/geography.service";
+import { GetFarmsDto } from "./dto/get-farms.dto";
+import { FarmFindQueryGenerator } from "../driving-distances/domain/find-query-generator";
+import { DrivingDistance } from "modules/driving-distances/entities/driving-distance.entity";
+import { GetFarmsResponseDto } from "./dto/get-farms-response.dto";
 
 export class FarmsService {
   private farmsRepository: Repository<Farm>;
   private geographyService: GeographyService;
+  private farmFindQueryGenerator: FarmFindQueryGenerator;
 
   constructor() {
     this.farmsRepository = dataSource.getRepository(Farm);
     this.geographyService = new GeographyService();
+    this.farmFindQueryGenerator = new FarmFindQueryGenerator();
   }
 
-  public async create(farm: CreateFarmDto) {
-    const farmEntity = new Farm();
-    farmEntity.name = farm.name;
-    farmEntity.size = farm.size;
-    farmEntity.yield = farm.yield;
-    farmEntity.address = farm.address;
+  public async find(): Promise<Farm[]> {
+    const farms = await this.farmsRepository.find();
+
+    return farms;
+  }
+
+  public async create(farm: CreateFarmDto, currentUserId: string) {
+    const farmEntity = this.farmsRepository.create({ ...farm, user: { id: currentUserId } });
 
     const coordinates = await this.geographyService.getCoordinates(farm.address);
 
     farmEntity.coordinates = coordinates;
 
-    await this.farmsRepository.save(farmEntity);
+    return this.farmsRepository.save(farmEntity);
   }
 
   public async delete(id: string) {
@@ -35,7 +43,37 @@ export class FarmsService {
     return this.farmsRepository.findOneBy({ id });
   }
 
-  public async getAll(): Promise<Farm[]> {
-    return this.farmsRepository.find();
+  public async getFarmsListQuery(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<FindManyOptions<DrivingDistance>> {
+    let averageYield = -1;
+
+    if (getFarmsDto.filterOutliers) {
+      averageYield = await this.getAverageYield();
+    }
+
+    return this.farmFindQueryGenerator.generateQuery(currentUserId, getFarmsDto, averageYield);
+  }
+
+  public async getAverageYield() {
+    const { avg }: { avg: number | null } = (await this.farmsRepository.query("SELECT AVG(yield) from farms")) as {
+      avg: number | null;
+    };
+
+    if (!avg) return 0;
+
+    return avg;
+  }
+
+  public toFarmList(drivingDistances: DrivingDistance[]): GetFarmsResponseDto[] {
+    return drivingDistances.map(drivingDistance => {
+      const { name, address, user, size } = drivingDistance.farm;
+      return {
+        name,
+        address,
+        owner: user.email,
+        size,
+        yield: drivingDistance.farm.yield,
+        drivingDistance: drivingDistance.drivingDistance,
+      };
+    });
   }
 }

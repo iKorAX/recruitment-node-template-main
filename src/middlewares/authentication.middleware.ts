@@ -14,6 +14,7 @@ export function authenticateTokenMiddleware(req: AuthenticatedRequest, res: Resp
     if (err) return res.sendStatus(403);
 
     req.user = user;
+    req.token = token;
 
     next();
   });
