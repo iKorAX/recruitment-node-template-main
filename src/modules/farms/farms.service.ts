@@ -1,4 +1,4 @@
-import { FindManyOptions, Repository } from "typeorm";
+import { DeleteResult, FindManyOptions, Repository } from "typeorm";
 import { CreateFarmDto } from "./dto/create-farm.dto";
 import { Farm } from "./entities/farm.entity";
 import dataSource from "orm/orm.config";
@@ -7,6 +7,7 @@ import { GetFarmsDto } from "./dto/get-farms.dto";
 import { FarmFindQueryGenerator } from "../driving-distances/domain/find-query-generator";
 import { DrivingDistance } from "modules/driving-distances/entities/driving-distance.entity";
 import { GetFarmsResponseDto } from "./dto/get-farms-response.dto";
+import { UnprocessableEntityError } from "errors/errors";
 
 export class FarmsService {
   private farmsRepository: Repository<Farm>;
@@ -35,8 +36,12 @@ export class FarmsService {
     return this.farmsRepository.save(farmEntity);
   }
 
-  public async delete(id: string) {
-    await this.farmsRepository.delete({ id });
+  public async delete(currentUserId: string, id: string): Promise<DeleteResult> {
+    const farm = await this.farmsRepository.findOneBy({ id, user: { id: currentUserId } });
+
+    if (!farm) throw new UnprocessableEntityError(`You don't own a farm with id ${id}`);
+
+    return this.farmsRepository.delete(farm);
   }
 
   public async getOneById(id: string): Promise<Farm | null> {

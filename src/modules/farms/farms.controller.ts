@@ -5,6 +5,7 @@ import { Validator } from "modules/utils/validator";
 import { CreateFarmDto } from "./dto/create-farm.dto";
 import { GetFarmsDto } from "./dto/get-farms.dto";
 import { DrivingDistanceService } from "modules/driving-distances/driving-distance.service";
+import { DeleteFarmDto } from "./dto/delete-farm.dto";
 
 export class FarmsController {
   private readonly farmsService: FarmsService;
@@ -23,7 +24,7 @@ export class FarmsController {
 
       await this.farmsService.create(validatedBody, req.user.id);
 
-      res.send(200);
+      res.sendStatus(200);
     } catch (error) {
       next(error);
     }
@@ -36,6 +37,18 @@ export class FarmsController {
       const query = await this.farmsService.getFarmsListQuery(req.user.id, validatedBody);
       const rawList = await this.drivingDistanceService.getAll(query);
       const result = this.farmsService.toFarmList(rawList);
+
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async delete(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const validatedBody = await this.validator.convertAndValidate(DeleteFarmDto, req.body as object);
+
+      const result = this.farmsService.delete(req.user.id, validatedBody.id);
 
       res.send(result);
     } catch (error) {
