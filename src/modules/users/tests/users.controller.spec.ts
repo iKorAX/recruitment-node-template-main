@@ -7,6 +7,7 @@ import ds from "orm/orm.config";
 import supertest, { SuperAgentTest } from "supertest";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UsersService } from "../users.service";
+import { GeographyService } from "modules/geography/geography.service";
 
 describe("UsersController", () => {
   let app: Express;
@@ -18,6 +19,7 @@ describe("UsersController", () => {
   beforeAll(() => {
     app = setupServer();
     server = http.createServer(app).listen(config.APP_PORT);
+    jest.spyOn(GeographyService.prototype, "getCoordinates").mockResolvedValue({ lat: 1, lng: 1 });
   });
 
   afterAll(() => {
@@ -36,7 +38,7 @@ describe("UsersController", () => {
   });
 
   describe("POST /users", () => {
-    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password" };
+    const createUserDto: CreateUserDto = { email: "user@test.com", password: "password", address: "Vilniaus g. 18, Vilnius" };
 
     it("should create new user", async () => {
       const res = await agent.post("/api/users").send(createUserDto);

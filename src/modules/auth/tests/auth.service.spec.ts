@@ -3,12 +3,12 @@ import { UnprocessableEntityError } from "errors/errors";
 import { Express } from "express";
 import { setupServer } from "server/server";
 import { disconnectAndClearDatabase } from "helpers/utils";
-import { CreateUserDto } from "modules/users/dto/create-user.dto";
 import { UsersService } from "modules/users/users.service";
 import ds from "orm/orm.config";
 import { AuthService } from "../auth.service";
 import { LoginUserDto } from "../dto/login-user.dto";
 import http, { Server } from "http";
+import { GeographyService } from "modules/geography/geography.service";
 
 describe("AuthService", () => {
   let app: Express;
@@ -30,6 +30,8 @@ describe("AuthService", () => {
 
     usersService = new UsersService();
     authService = new AuthService();
+
+    jest.spyOn(GeographyService.prototype, "getCoordinates").mockResolvedValue({ lat: 1, lng: 1 });
   });
 
   afterEach(async () => {
@@ -38,7 +40,8 @@ describe("AuthService", () => {
 
   describe(".login", () => {
     const loginDto: LoginUserDto = { email: "user@test.com", password: "password" };
-    const createUser = async (userDto: CreateUserDto) => usersService.createUser(userDto);
+    const createUser = async (userDto: LoginUserDto) =>
+      usersService.createUser({ ...userDto, address: "Vilniaus g. 18, Vilnius" });
 
     it("should create access token for existing user", async () => {
       await createUser(loginDto);

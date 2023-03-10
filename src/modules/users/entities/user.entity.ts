@@ -1,4 +1,8 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { DrivingDistance } from "modules/driving-distances/entities/driving-distance.entity";
+import { Farm } from "modules/farms/entities/farm.entity";
+import { PointTransformer } from "modules/utils/point-transformer";
+import { Coordinate } from "modules/geography/dto/geocode-response.dto";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -10,6 +14,18 @@ export class User {
 
   @Column()
   public hashedPassword: string;
+
+  @Column()
+  public address: string;
+
+  @Column({ type: "point", transformer: new PointTransformer() })
+  public coordinates: Coordinate;
+
+  @OneToMany(() => Farm, farm => farm.user, { cascade: true })
+  public farms: Array<Farm>;
+
+  @OneToMany(() => DrivingDistance, drivingDistance => drivingDistance.user, { cascade: true })
+  public drivingDistances: Array<DrivingDistance>;
 
   @CreateDateColumn()
   public createdAt: Date;

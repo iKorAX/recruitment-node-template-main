@@ -44,4 +44,20 @@ export class EnvironmentVariables {
   @IsNumber()
   @IsNotEmpty()
   public JWT_EXPIRES_AT: number;
+  
+  @IsString()
+  @IsNotEmpty()
+  public DISTANCEMATRIX_BASE_URL: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  public DISTANCEMATRIX_ADDRESS_ENDPOINT: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  public DISTANCEMATRIX_DISTANCE_ENDPOINT: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  public DISTANCEMATRIX_API_KEY: string;
 }

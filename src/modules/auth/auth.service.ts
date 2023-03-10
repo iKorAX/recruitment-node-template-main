@@ -4,7 +4,7 @@ import { fromUnixTime } from "date-fns";
 import { UnprocessableEntityError } from "errors/errors";
 import { decode, sign } from "jsonwebtoken";
 import { UsersService } from "modules/users/users.service";
-import { Repository } from "typeorm";
+import { Repository, MoreThan } from "typeorm";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { AccessToken } from "./entities/access-token.entity";
 import dataSource from "orm/orm.config";
@@ -44,6 +44,13 @@ export class AuthService {
     });
 
     return this.accessTokenRepository.save(newToken);
+  }
+
+  public getActiveUserToken(token: string, currentUserId: string) {
+    return this.accessTokenRepository.findOne({
+      where: { user: { id: currentUserId }, token, expiresAt: MoreThan(new Date()) },
+      relations: { user: true },
+    });
   }
 
   private getJwtTokenExpireDate(token: string): number {
