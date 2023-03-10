@@ -4,9 +4,9 @@ import { FarmSortingAttribute } from "../enums/farm-sorting-attribute";
 export class GetFarmsDto {
   @IsEnum(FarmSortingAttribute)
   @IsOptional()
-  public sortBy: FarmSortingAttribute;
+  public sortBy?: FarmSortingAttribute;
 
   @IsBoolean()
   @IsOptional()
-  public filterOutliers: boolean;
+  public filterOutliers?: boolean;
 }

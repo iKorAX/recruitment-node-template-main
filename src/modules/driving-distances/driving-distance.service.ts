@@ -6,23 +6,26 @@ import dataSource from "orm/orm.config";
 import { FarmsService } from "modules/farms/farms.service";
 import { Farm } from "modules/farms/entities/farm.entity";
 import { User } from "modules/users/entities/user.entity";
+import { GetFarmsDto } from "modules/farms/dto/get-farms.dto";
+import { FindQueryGenerator } from "./domain/find-query-generator";
 
 export class DrivingDistanceService {
   private readonly usersService: UsersService;
   private readonly geographyService: GeographyService;
   private readonly drivingDistancesRepository: Repository<DrivingDistance>;
   private readonly farmsService: FarmsService;
+  private farmFindQueryGenerator: FindQueryGenerator;
 
   constructor() {
     this.usersService = new UsersService();
     this.geographyService = new GeographyService();
     this.farmsService = new FarmsService();
     this.drivingDistancesRepository = dataSource.getRepository(DrivingDistance);
+    this.farmFindQueryGenerator = new FindQueryGenerator();
   }
 
   public async createFromUsersToFarm(farm: Farm) {
     const users = await this.usersService.find();
-    // const farm = await this.farmsService.getOneById(farmId);
 
     if (!users) return;
     if (!farm) return;
@@ -39,7 +42,6 @@ export class DrivingDistanceService {
   }
 
   public async createFromFarmsToUser(user: User) {
-    // const user = await this.usersService.findOneBy({ id: userId });
     const farms = await this.farmsService.find();
 
     if (!user) return;
@@ -56,12 +58,24 @@ export class DrivingDistanceService {
     }
   }
 
-  public async getAll(query: FindManyOptions<DrivingDistance>): Promise<DrivingDistance[]> {
+  public async getAllFarmsWithDistances(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<DrivingDistance[]> {
+    const query: FindManyOptions<DrivingDistance> = await this.getFarmsListQuery(currentUserId, getFarmsDto);
+
     try {
       return await this.drivingDistancesRepository.find(query);
     } catch (err) {
       console.log(err);
       return [];
     }
+  }
+
+  private async getFarmsListQuery(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<FindManyOptions<DrivingDistance>> {
+    let averageYield = -1;
+
+    if (getFarmsDto.filterOutliers) {
+      averageYield = await this.farmsService.getAverageYield();
+    }
+
+    return this.farmFindQueryGenerator.generateQuery(currentUserId, getFarmsDto, averageYield);
   }
 }

@@ -1,10 +1,8 @@
-import { DeleteResult, FindManyOptions, Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 import { CreateFarmDto } from "./dto/create-farm.dto";
 import { Farm } from "./entities/farm.entity";
 import dataSource from "orm/orm.config";
 import { GeographyService } from "modules/geography/geography.service";
-import { GetFarmsDto } from "./dto/get-farms.dto";
-import { FarmFindQueryGenerator } from "../driving-distances/domain/find-query-generator";
 import { DrivingDistance } from "modules/driving-distances/entities/driving-distance.entity";
 import { GetFarmsResponseDto } from "./dto/get-farms-response.dto";
 import { UnprocessableEntityError } from "errors/errors";
@@ -12,12 +10,10 @@ import { UnprocessableEntityError } from "errors/errors";
 export class FarmsService {
   private farmsRepository: Repository<Farm>;
   private geographyService: GeographyService;
-  private farmFindQueryGenerator: FarmFindQueryGenerator;
 
   constructor() {
     this.farmsRepository = dataSource.getRepository(Farm);
     this.geographyService = new GeographyService();
-    this.farmFindQueryGenerator = new FarmFindQueryGenerator();
   }
 
   public async find(): Promise<Farm[]> {
@@ -46,16 +42,6 @@ export class FarmsService {
 
   public async getOneById(id: string): Promise<Farm | null> {
     return this.farmsRepository.findOneBy({ id });
-  }
-
-  public async getFarmsListQuery(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<FindManyOptions<DrivingDistance>> {
-    let averageYield = -1;
-
-    if (getFarmsDto.filterOutliers) {
-      averageYield = await this.getAverageYield();
-    }
-
-    return this.farmFindQueryGenerator.generateQuery(currentUserId, getFarmsDto, averageYield);
   }
 
   public async getAverageYield() {

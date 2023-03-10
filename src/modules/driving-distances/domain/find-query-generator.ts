@@ -3,7 +3,8 @@ import { GetFarmsDto } from "../../farms/dto/get-farms.dto";
 import { FarmSortingAttribute } from "../../farms/enums/farm-sorting-attribute";
 import { DrivingDistance } from "../entities/driving-distance.entity";
 
-export class FarmFindQueryGenerator {
+export class FindQueryGenerator {
+  constructor() {}
   public generateQuery(currentUserId: string, getFarmsDto: GetFarmsDto, averageYield: number) {
     const query: FindManyOptions<DrivingDistance> = {
       relations: ["user", "farm", "farm.user"],
@@ -29,7 +30,10 @@ export class FarmFindQueryGenerator {
     }
 
     if (getFarmsDto.filterOutliers && averageYield > -1) {
-      query.where = [{ farm: { yield: LessThan(averageYield * 0.7) } }, { farm: { yield: MoreThan(averageYield * 1.3) } }];
+      query.where = {
+        user: { id: currentUserId },
+        farm: [{ yield: LessThan(averageYield * 0.7) }, { yield: MoreThan(averageYield * 1.3) }],
+      };
     }
 
     return query;

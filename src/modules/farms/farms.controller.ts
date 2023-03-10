@@ -34,8 +34,7 @@ export class FarmsController {
     try {
       const validatedBody = await this.validator.convertAndValidate(GetFarmsDto, req.query as object);
 
-      const query = await this.farmsService.getFarmsListQuery(req.user.id, validatedBody);
-      const rawList = await this.drivingDistanceService.getAll(query);
+      const rawList = await this.drivingDistanceService.getAllFarmsWithDistances(req.user.id, validatedBody);
       const result = this.farmsService.toFarmList(rawList);
 
       res.send(result);
