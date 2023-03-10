@@ -50,4 +50,7 @@ export class DistanceResponseDto {
   @ValidateNested({ each: true })
   @Type(() => DistanceRow)
   public rows: Array<DistanceRow>;
+
+  @IsString()
+  public status: string;
 }

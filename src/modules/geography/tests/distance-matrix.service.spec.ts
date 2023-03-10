@@ -5,6 +5,7 @@ import { DistanceMatrixService } from "../distance-matrix.service";
 import config from "config/config";
 import { GeocodeResponseDto } from "../dto/geocode-response.dto";
 import { DistanceResponseDto } from "../dto/distance-response.dto";
+import { buildGeocodeResponseDtoMock } from "./__mocks__/geocode-response.dto.mock";
 
 describe("DistanceMatrixService", () => {
   beforeAll(() => {
@@ -18,56 +19,7 @@ describe("DistanceMatrixService", () => {
       const mockedUrl = `${config.DISTANCEMATRIX_BASE_URL}/${config.DISTANCEMATRIX_ADDRESS_ENDPOINT}`;
 
       const address = "Vilnius street 1, Vilnius";
-      const mockResponse = {
-        result: [
-          {
-            address_components: [
-              {
-                long_name: "21",
-                short_name: "21",
-                types: ["street_number"],
-              },
-              {
-                long_name: "henrie st",
-                short_name: "henrie st",
-                types: ["route"],
-              },
-              {
-                long_name: "bristol",
-                short_name: "bristol",
-                types: ["locality"],
-              },
-              {
-                long_name: "uk",
-                short_name: "uk",
-                types: ["country"],
-              },
-            ],
-            formatted_address: "21 Henrie St, Bristol, UK",
-            geometry: {
-              location: {
-                lat: 51.442498500000006,
-                lng: -2.5796065,
-              },
-              location_type: "APPROXIMATE",
-              viewport: {
-                northeast: {
-                  lat: 51.442498500000006,
-                  lng: -2.5796065,
-                },
-                southwest: {
-                  lat: 51.442498500000006,
-                  lng: -2.5796065,
-                },
-              },
-            },
-            place_id: "",
-            plus_code: {},
-            types: ["locality", "political"],
-          },
-        ],
-        status: "OK",
-      };
+      const mockResponse = buildGeocodeResponseDtoMock();
 
       const mockAdapter = new MockAdapter(externalApiCall);
       mockAdapter.onGet(mockedUrl).reply(200, mockResponse);

@@ -14,21 +14,20 @@ export class DrivingDistanceService {
   private readonly geographyService: GeographyService;
   private readonly drivingDistancesRepository: Repository<DrivingDistance>;
   private readonly farmsService: FarmsService;
-  private farmFindQueryGenerator: FindQueryGenerator;
+  private findQueryGenerator: FindQueryGenerator;
 
   constructor() {
     this.usersService = new UsersService();
     this.geographyService = new GeographyService();
     this.farmsService = new FarmsService();
     this.drivingDistancesRepository = dataSource.getRepository(DrivingDistance);
-    this.farmFindQueryGenerator = new FindQueryGenerator();
+    this.findQueryGenerator = new FindQueryGenerator();
   }
 
   public async createFromUsersToFarm(farm: Farm) {
     const users = await this.usersService.find();
 
     if (!users) return;
-    if (!farm) return;
 
     for (const user of users) {
       const destination = user.coordinates;
@@ -44,7 +43,6 @@ export class DrivingDistanceService {
   public async createFromFarmsToUser(user: User) {
     const farms = await this.farmsService.find();
 
-    if (!user) return;
     if (!farms) return;
 
     for (const farm of farms) {
@@ -61,12 +59,7 @@ export class DrivingDistanceService {
   public async getAllFarmsWithDistances(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<DrivingDistance[]> {
     const query: FindManyOptions<DrivingDistance> = await this.getFarmsListQuery(currentUserId, getFarmsDto);
 
-    try {
-      return await this.drivingDistancesRepository.find(query);
-    } catch (err) {
-      console.log(err);
-      return [];
-    }
+    return this.drivingDistancesRepository.find(query);
   }
 
   private async getFarmsListQuery(currentUserId: string, getFarmsDto: GetFarmsDto): Promise<FindManyOptions<DrivingDistance>> {
@@ -76,6 +69,6 @@ export class DrivingDistanceService {
       averageYield = await this.farmsService.getAverageYield();
     }
 
-    return this.farmFindQueryGenerator.generateQuery(currentUserId, getFarmsDto, averageYield);
+    return this.findQueryGenerator.generateQuery(currentUserId, getFarmsDto, averageYield);
   }
 }
