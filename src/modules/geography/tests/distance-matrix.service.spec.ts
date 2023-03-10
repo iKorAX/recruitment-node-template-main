@@ -1,4 +1,4 @@
-import { plainToInstance } from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
 import { externalApiCall } from "helpers/external-api-call";
 import MockAdapter from "axios-mock-adapter";
 import { DistanceMatrixService } from "../distance-matrix.service";
@@ -12,21 +12,23 @@ describe("DistanceMatrixService", () => {
     config.DISTANCEMATRIX_BASE_URL = "https://dummy-url.dumdum";
   });
 
-  describe(".getAddressData", () => {
+  describe(".getCoordinates", () => {
     it("should return geographical data for an address", async () => {
       jest.spyOn(externalApiCall, "get");
 
       const mockedUrl = `${config.DISTANCEMATRIX_BASE_URL}/${config.DISTANCEMATRIX_ADDRESS_ENDPOINT}`;
 
       const address = "Vilnius street 1, Vilnius";
-      const mockResponse = buildGeocodeResponseDtoMock();
+      const mockResponse = new GeocodeResponseDto();
+      mockResponse.result = buildGeocodeResponseDtoMock().result;
+      mockResponse.status = "OK";
 
       const mockAdapter = new MockAdapter(externalApiCall);
-      mockAdapter.onGet(mockedUrl).reply(200, mockResponse);
+      mockAdapter.onGet(mockedUrl).reply(200, instanceToPlain(mockResponse));
 
       const service = new DistanceMatrixService();
 
-      await expect(service.getCoordinates(address)).resolves.toEqual(plainToInstance(GeocodeResponseDto, mockResponse));
+      await expect(service.getCoordinates(address)).resolves.toEqual(mockResponse);
     });
 
     it("should throw error if request to data provider fails", async () => {
